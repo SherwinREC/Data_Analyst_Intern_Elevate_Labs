@@ -1,0 +1,58 @@
+Total Sales = 
+    SUM('Table'[Sales])
+
+Total Profit = 
+    SUM('Table'[Profit])
+
+Total Quantity = 
+    SUM('Table'[Quantity])
+
+Total Transactions = 
+    COUNTROWS('Table')
+
+Avg Profit Margin = 
+    DIVIDE([Total Profit], [Total Sales], 0) * 100
+
+Avg Order Value = 
+    DIVIDE([Total Sales], [Total Transactions], 0)
+
+Sales Growth % = 
+    VAR CurrentSales = [Total Sales]
+    VAR PreviousSales = 
+        CALCULATE(
+            [Total Sales],
+            PARALLELPERIOD('Table'[Date], -1, YEAR)
+        )
+    RETURN
+        DIVIDE(CurrentSales - PreviousSales, PreviousSales, 0) * 100
+
+Profit Growth % = 
+    VAR CurrentProfit = [Total Profit]
+    VAR PreviousProfit = 
+        CALCULATE(
+            [Total Profit],
+            PARALLELPERIOD('Table'[Date], -1, YEAR)
+        )
+    RETURN
+        DIVIDE(CurrentProfit - PreviousProfit, PreviousProfit, 0) * 100
+
+YTD Sales = 
+    CALCULATE(
+        [Total Sales],
+        DATESYTD('Table'[Date])
+    )
+
+YTD Profit = 
+    CALCULATE(
+        [Total Profit],
+        DATESYTD('Table'[Date])
+    )
+
+MTD Sales = 
+    CALCULATE(
+        [Total Sales],
+        DATESMTD('Table'[Date])
+    )
+
+Profit Status = 
+    IF([Total Profit] > 0, "Profitable", "Loss")
