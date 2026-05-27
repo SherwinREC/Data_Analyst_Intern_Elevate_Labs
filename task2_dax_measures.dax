@@ -1,0 +1,71 @@
+-- =============================================
+-- Task 2 - Data Visualization using Power BI
+-- DAX Measures - Elevate Labs Internship
+-- =============================================
+
+Total Sales = 
+    SUM('Orders'[Sales])
+
+Total Profit = 
+    SUM('Orders'[Profit])
+
+Profit Margin % = 
+    DIVIDE([Total Profit], [Total Sales], 0) * 100
+
+Total Orders = 
+    DISTINCTCOUNT('Orders'[Order ID])
+
+Total Quantity = 
+    SUM('Orders'[Quantity])
+
+Average Discount = 
+    AVERAGE('Orders'[Discount])
+
+Average Order Value = 
+    DIVIDE([Total Sales], [Total Orders], 0)
+
+Monthly Sales = 
+    CALCULATE(
+        SUM('Orders'[Sales]),
+        DATESMTD('Orders'[Order Date])
+    )
+
+Quarterly Sales = 
+    CALCULATE(
+        SUM('Orders'[Sales]),
+        DATESQTD('Orders'[Order Date])
+    )
+
+YTD Sales = 
+    CALCULATE(
+        SUM('Orders'[Sales]),
+        DATESYTD('Orders'[Order Date])
+    )
+
+Sales Growth % = 
+    VAR CurrentSales = [Total Sales]
+    VAR PreviousSales = 
+        CALCULATE(
+            SUM('Orders'[Sales]),
+            DATEADD('Orders'[Order Date], -1, MONTH)
+        )
+    RETURN
+        DIVIDE(CurrentSales - PreviousSales, PreviousSales, 0) * 100
+
+Top Customer Rank = 
+    RANKX(
+        ALL('Orders'[Customer Name]),
+        [Total Sales],
+        ,
+        DESC,
+        Skip
+    )
+
+Top 10 Customers = 
+    IF([Top Customer Rank] <= 10, [Total Sales], BLANK())
+
+High Discount Flag = 
+    IF([Average Discount] > 0.3, "High Discount", "Normal")
+
+Profit Status = 
+    IF([Total Profit] > 0, "Profitable", "Loss")
